@@ -23,6 +23,7 @@
     "@app": "app",
     "@core": "core",
     "@middlewares": "middlewares",
+    "@config": "config",
     "@api": "app/api",
     "@dao": "app/dao",
     "@lib": "app/lib",

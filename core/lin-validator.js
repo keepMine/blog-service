@@ -1,6 +1,7 @@
 const validator  = require("validator");
 const {ParameterException}  = require("./http-exception");
-const {get,last} = require("lodash")
+const {get,last, cloneDeep} = require("lodash")
+const {findMembers}  = require("@core/utils");
 class LinValidator {
   constructor() {
     this.data = {}
@@ -8,7 +9,7 @@ class LinValidator {
   }
 
     // 组装参数
-  _assembleAllParams() {
+  _assembleAllParams(ctx) {
     return {
       body: ctx.request.body,
       query:ctx.request.query,
