@@ -3,7 +3,7 @@
  */
 
 const Koa  = require("koa");
-// 设置路径别名的库，需要在代码前面require
+// package设置路径别名的库，需要在代码前面require module-alias
 require('module-alias/register')
 // body解析器
 const bodyParser  = require("koa-bodyparser");
