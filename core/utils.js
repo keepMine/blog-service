@@ -42,13 +42,14 @@ const findMembers = function (instance, {
         return true
       }
     }
+    // 筛选出 挂载了 统一前缀的 属性
     if (prefix) {
       if (value.startsWith(prefix)) {
         return true
       }
     }
      
-       
+      // 筛选当前 instance 身上的 继承自  specifiedType 的
     if (specifiedType) {
       if (instance[value] instanceof specifiedType) {
         return true
