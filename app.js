@@ -30,14 +30,14 @@ app.use(ratelimit({
   driver: 'memory',
   db: db,
   duration: 60000,
-  errorMessage: 'Sometimes You Just Have to Slow Down.',
+  errorMessage: '接口调用频繁，请稍后再试',
   id: (ctx) => ctx.ip,
   headers: {
     remaining: 'Rate-Limit-Remaining',
     reset: 'Rate-Limit-Reset',
     total: 'Rate-Limit-Total'
   },
-  max: 100,
+  max: 100, // 限制同一个ip的并发数
   disableHeader: false,
   whitelist: (ctx) => {
     // some logic that returns a boolean

@@ -5,6 +5,7 @@ const {
 
 const { Admin } = require('@models/admin')
 
+// 注册验证类上的属性和方法都会在继承的 LinValidator 上的 validate方法中被验证具体在check中对方法和属性分开验证 
 class RegisterValidator extends LinValidator {
   constructor() {
     super();
@@ -31,7 +32,7 @@ class RegisterValidator extends LinValidator {
       }),
     ]
   }
-
+  // 入参 vals 为this.data
   validatePassword(vals) {
     const psw1 = vals.body.password1
     const psw2 = vals.body.password2
