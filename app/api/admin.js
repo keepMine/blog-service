@@ -30,7 +30,6 @@ const router = new Router({
 router.post('/register', async (ctx) => {
   // 通过验证器校验参数是否通过  v 为 new RegisterValidator() 的实例对象 this
   const v = await new RegisterValidator().validate(ctx)
-  console.log('v', v)
   // 上面的验证如果没有抛出错误则进行数据创建，否则终止
   // 创建管理员
   const [err,data] = await AdminDao.create({
@@ -50,12 +49,12 @@ router.post('/register', async (ctx) => {
 /**
 * 管理员登陆
  */
-router.post('/login', async (ctx) => {
+router.post('/login', new Auth().loginVerifyToken, async (ctx) => {
   const v = await new AdminLoginValidator().validate(ctx)
-
   const [err, token] = await LoginManager.adminLogin({
     email: v.get('body.email'),
      password: v.get('body.password'),
+     ctx
   })
   if(!err) {
     ctx.response.status = 200
