@@ -1,10 +1,10 @@
-const validator  = require("validator");
-const {ParameterException}  = require("./http-exception");
-const {get,last, cloneDeep, set} = require("lodash")
-const {findMembers}  = require("@core/utils");
+const validator = require('validator')
+const { ParameterException } = require('./http-exception')
+const { get, last, cloneDeep, set } = require('lodash')
+const { findMembers } = require('@core/utils')
 
 /**
-* 该类主要作用为为当前this身上挂在组装的数据，以及验证当前this身上的属性和方法
+ * 该类主要作用为为当前this身上挂在组装的数据，以及验证当前this身上的属性和方法
  */
 class LinValidator {
   constructor() {
@@ -12,44 +12,44 @@ class LinValidator {
     this.parsed = {}
   }
 
-    // 组装参数
+  // 组装参数
   _assembleAllParams(ctx) {
     return {
       body: ctx.request.body,
-      query:ctx.request.query,
+      query: ctx.request.query,
       header: ctx.request.header,
-      path: ctx.params // 由koa-router提供的将路径中的键值对存储到ctx.params上
+      path: ctx.params, // 由koa-router提供的将路径中的键值对存储到ctx.params上
     }
   }
 
   // 从对象中解析指定路径的value,嵌套结构
   get(path, parsed = true) {
-    if(parsed) {
+    if (parsed) {
       // lodash的 get方法获取this.parsed中path路径的value值 null为默认值
       const value = get(this.parsed, path, null)
-      if(value === null) {
-        const keys = path.split(".")
+      if (value === null) {
+        const keys = path.split('.')
         // 获取数组最后一个
         const key = last(keys)
         // 该属性不存在于解析后的配置对象中，需要从默认配置对象 this.parsed.default 中获取该属性的值
         return get(this.parsed.default, key)
       }
       return value
-    }else {
+    } else {
       return get(this.data, path)
     }
   }
   // 过滤对象的属性
   _findMembersFilter(key) {
     // 验证key 为 validate支持的校验键
-    if(/validate([A-Z])\w+/g.test(key)) {
+    if (/validate([A-Z])\w+/g.test(key)) {
       return true
     }
     // 如果this上的key为一个数组 需要验证 他全部继承自 Rule 类
-    if(this[key] instanceof Array) {
-      this[key].forEach(item => {
+    if (this[key] instanceof Array) {
+      this[key].forEach((item) => {
         const isRuleType = item instanceof Rule
-        if(!isRuleType) {
+        if (!isRuleType) {
           throw new Error('验证数组必须全部为Rule类型')
         }
       })
@@ -66,13 +66,13 @@ class LinValidator {
     this.parsed = cloneDeep(params)
     // 这里调用了 findMembers 方法 该递归方法的作用为返回一个子项为this实例的原型链上符合_findMembersFilter条件的属性的数组
     const memberKeys = findMembers(this, {
-      filter: this._findMembersFilter.bind(this)
+      filter: this._findMembersFilter.bind(this),
     })
 
     const errorMsgs = []
     // for...of语句用于遍历可迭代对象 key 为该对象的值
     for (let key of memberKeys) {
-      // 
+      //
       const result = await this._check(key, alias)
       if (!result.success) {
         errorMsgs.push(result.msg)
@@ -90,8 +90,8 @@ class LinValidator {
   // 该方法为验证当前this自身以及原型链上所有的属性和方法 属性通过 validate 包提供的方法验证， 方法直接传入数据调用
   async _check(key, alias = {}) {
     // 判断 memberKeys子项是否为 函数 这个方法的作用为执行 RegisterValidator 类上定义的校验函数
-    const isCustomFunc = typeof (this[key]) == 'function' ? true : false
-    let result;
+    const isCustomFunc = typeof this[key] == 'function' ? true : false
+    let result
     // 如果为校验函数 通过 try/catch 捕获函数是否抛出错误，没有则验证通过 result为 {pass: true, msg: ''}
     if (isCustomFunc) {
       try {
@@ -106,7 +106,7 @@ class LinValidator {
       // 这里验证this身上的属性，并且通过_findMembersFilter过滤的只为Rule类的实例的属性
       // 属性验证, 数组，内有一组Rule
       const rules = this[key]
-      //  ruleField 为RuleField类的实例传入设置的验证数组 
+      //  ruleField 为RuleField类的实例传入设置的验证数组
       const ruleField = new RuleField(rules)
       // 别名替换
       key = alias[key] ? alias[key] : key
@@ -114,7 +114,7 @@ class LinValidator {
       const param = this._findParam(key)
       // 为该值执行RuleField类上的 validate方法返回值为 RuleFieldResult类的实例 包含了 {pass, msg, value}
       result = ruleField.validate(param.value)
-      console.log('result',result)
+      console.log('result', result)
       if (result.pass) {
         // 如果参数路径不存在，往往是因为用户传了空值，而又设置了默认值 默认值由 _hasDefault 方法拿到  前提为 _allowEmpty 为 true
         if (param.path.length == 0) {
@@ -124,17 +124,17 @@ class LinValidator {
         }
       }
     }
-    // 如果结果的 pass为false 接口调用不通过 
+    // 如果结果的 pass为false 接口调用不通过
     if (!result.pass) {
       const msg = `${isCustomFunc ? '' : key}${result.msg}`
       return {
         msg: msg,
-        success: false
+        success: false,
       }
     }
     return {
       msg: 'ok',
-      success: true
+      success: true,
     }
   }
   // 作用为 在 this.data中查找key所在的value值并返回
@@ -144,51 +144,50 @@ class LinValidator {
     if (value) {
       return {
         value,
-        path: ['query', key]
+        path: ['query', key],
       }
     }
     value = get(this.data, ['body', key])
     if (value) {
       return {
         value,
-        path: ['body', key]
+        path: ['body', key],
       }
     }
     value = get(this.data, ['path', key])
     if (value) {
       return {
         value,
-        path: ['path', key]
+        path: ['path', key],
       }
     }
     value = get(this.data, ['header', key])
     if (value) {
       return {
         value,
-        path: ['header', key]
+        path: ['header', key],
       }
     }
     return {
       value: null,
-      path: []
+      path: [],
     }
   }
-
 }
 
 /**
-* @des 作用为 创建一个 拥有 pass 和 msg的结果类 
- */ 
+ * @des 作用为 创建一个 拥有 pass 和 msg的结果类
+ */
 class RuleResult {
-  constructor(pass, msg='') {
+  constructor(pass, msg = '') {
     Object.assign(this, {
       pass,
-      msg
+      msg,
     })
   }
 }
 /**
-* @des 作用为创建携带 value值的结果类 
+ * @des 作用为创建携带 value值的结果类
  */
 class RuleFieldResult extends RuleResult {
   constructor(pass, msg = '', legalValue = null) {
@@ -197,17 +196,19 @@ class RuleFieldResult extends RuleResult {
   }
 }
 /**
-* @des 作用为创建提交参数的验证数组
+ * @des 作用为创建提交参数的验证数组
  */
 class Rule {
   constructor(name, msg, ...params) {
     Object.assign(this, {
-      name, msg, params
+      name,
+      msg,
+      params,
     })
   }
   validate(field) {
     if (this.name == 'isOptional') return new RuleResult(true)
-    // 使用 validator包校验 如果返回为 false 则 不通过 
+    // 使用 validator包校验 如果返回为 false 则 不通过
     if (!validator[this.name](field + '', ...this.params)) {
       return new RuleResult(false, this.msg || this.message || '参数错误')
     }
@@ -216,7 +217,7 @@ class Rule {
 }
 
 /**
-* @des 作用为 对需要验证的属性的验证数组进行验证并返回 RuleFieldResult类的实例
+ * @des 作用为 对需要验证的属性的验证数组进行验证并返回 RuleFieldResult类的实例
  */
 class RuleField {
   constructor(rules) {
@@ -224,7 +225,7 @@ class RuleField {
   }
 
   validate(field) {
-    // 如果值为null 
+    // 如果值为null
     if (field == null) {
       // 如果字段为空
       const allowEmpty = this._allowEmpty()
@@ -268,7 +269,7 @@ class RuleField {
     }
     return value
   }
-  // 判断是否允许为 空 当验证的name 为isOptional  
+  // 判断是否允许为 空 当验证的name 为isOptional
   _allowEmpty() {
     for (let rule of this.rules) {
       if (rule.name == 'isOptional') {
@@ -290,5 +291,5 @@ class RuleField {
 
 module.exports = {
   Rule,
-  LinValidator
+  LinValidator,
 }

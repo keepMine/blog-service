@@ -9,26 +9,26 @@ class AdminDao {
     const hasAdmin = await Admin.findOne({
       where: {
         email,
-        deleted_at: null
-      }
-    });
+        deleted_at: null,
+      },
+    })
 
     if (hasAdmin) {
-      throw new global.errs.Existing('管理员已存在');
+      throw new global.errs.Existing('管理员已存在')
     }
 
-    const admin = new Admin();
+    const admin = new Admin()
     admin.nickname = nickname
     admin.email = email
     admin.password = password
 
     try {
       // 是 Sequelize 中用于将数据保存到数据库中的方法。该方法可以被调用于一个 Sequelize 模型的实例对象上，用于将该实例对象代表的数据保存到数据库中
-      const res = await admin.save();
+      const res = await admin.save()
 
       const data = {
         email: res.email,
-        nickname: res.nickname
+        nickname: res.nickname,
       }
 
       return [null, data]
@@ -39,13 +39,12 @@ class AdminDao {
 
   // 验证密码
   static async verify(email, plainPassword) {
-
     try {
       // 查询用户是否存在
       const admin = await Admin.findOne({
         where: {
-          email
-        }
+          email,
+        },
       })
 
       if (!admin) {
@@ -53,7 +52,7 @@ class AdminDao {
       }
 
       // 验证密码是否正确
-      const correct = bcrypt.compareSync(plainPassword, admin.password);
+      const correct = bcrypt.compareSync(plainPassword, admin.password)
 
       if (!correct) {
         throw new global.errs.AuthFailed('账号不存在或者密码不正确')
@@ -67,13 +66,13 @@ class AdminDao {
 
   // 查询管理员信息
   static async detail(id) {
-    const scope = 'bh';
+    const scope = 'bh'
     try {
       // 查询管理员是否存在
       const admin = await Admin.scope(scope).findOne({
         where: {
-          id
-        }
+          id,
+        },
       })
 
       if (!admin) {
@@ -88,5 +87,5 @@ class AdminDao {
 }
 
 module.exports = {
-  AdminDao
+  AdminDao,
 }

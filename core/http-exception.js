@@ -56,5 +56,5 @@ module.exports = {
   AuthFailed,
   NotFound,
   Forbidden,
-  Existing
+  Existing,
 }

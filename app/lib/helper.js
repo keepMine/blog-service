@@ -3,7 +3,7 @@ class Resolve {
     return {
       msg,
       err,
-      errorCode
+      errorCode,
     }
   }
 
@@ -11,7 +11,7 @@ class Resolve {
     return {
       msg,
       code,
-      errorCode
+      errorCode,
     }
   }
 
@@ -20,11 +20,11 @@ class Resolve {
       code,
       msg,
       errorCode,
-      data
+      data,
     }
   }
 }
 
 module.exports = {
-  Resolve
+  Resolve,
 }

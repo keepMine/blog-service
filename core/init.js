@@ -15,14 +15,14 @@ class InitManager {
     const apiDirectory = `${process.cwd()}/app/api`
 
     // 该函数实现的是为require的每个模块调用
-   const whenLoadModule = (obj) => {
-    // 当导入模块继承自Router 则注册路由
-    if(obj instanceof Router) {
-      InitManager.app.use(obj.routes())
+    const whenLoadModule = (obj) => {
+      // 当导入模块继承自Router 则注册路由
+      if (obj instanceof Router) {
+        InitManager.app.use(obj.routes())
+      }
     }
-  }
     // 路由自动加载
-    requireDirectory(module, apiDirectory, {visit: whenLoadModule})
+    requireDirectory(module, apiDirectory, { visit: whenLoadModule })
   }
   // 将httpError配置文件挂载到global上
   static loadHttpException() {
