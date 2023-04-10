@@ -28,5 +28,6 @@
     ├── exception 捕获任何抛出的错误
 ├── package-lock.json
 ├── package.json
+├── .prettierrc 代码格式化
 └── yarn.lock
 ```

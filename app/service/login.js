@@ -1,4 +1,5 @@
 const { AdminDao } = require('@dao/admin')
+const { UserDao } = require('@dao/user')
 const { generateToken } = require('@core/utils')
 const { Auth } = require('@middlewares/auth')
 
@@ -15,6 +16,15 @@ class LoginManager {
     } else {
       return [err, null]
     }
+  }
+  static async userLogin(params) {
+    const { email, password } = params
+   const [err, user] = await UserDao.verify(email, password)
+   if(!err) {
+    return [null, generateToken(user.id, Auth.USER), user.id]
+   }else {
+    return [err, null, null]
+   }
   }
 }
 
