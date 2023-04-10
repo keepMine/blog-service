@@ -50,6 +50,24 @@ class UserDao {
       return [error, null]
     }
   }
+  static async detail(id, status) {
+    try {
+      const scope = 'bh'
+      const filter = {
+        id
+      }
+      if(status) filter.status = status
+      const user = await User.scope(scope).findOne({
+        where: filter
+      })
+      if(!user) {
+        throw new global.errs.AuthFailed('账号不存在或者被封禁')
+      }
+      return [null, user]
+    } catch (error) {
+      return [error, null]
+    }
+  }
 }
 module.exports = {
   UserDao

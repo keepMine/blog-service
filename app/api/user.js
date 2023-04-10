@@ -4,7 +4,7 @@
 
 const Router = require('koa-router')
 
-const { RegisterValidator } = require('@validators/user')
+const { RegisterValidator, LoginValidator } = require('@validators/user')
 
 const { UserDao } = require('@dao/user')
 
@@ -44,6 +44,28 @@ router.post('/register', async (ctx) => {
   }else{
     ctx.body = res.fail(data)
   }
+})
+
+router.post('/login', new Auth().loginVerifyToken, async (ctx) => {
+  const v = await new LoginValidator().validate(ctx)
+  const email = v.get('body.email')
+  const password = v.get('body.password')
+  const [errLogin, token, id] = await LoginManager.userLogin({
+    email, 
+    password,
+    ctx
+  })
+  if(!errLogin) {
+    const [err, user] = await UserDao.detail(id)
+    if(!err) {
+      user.setDataValue('token', token)
+      ctx.response.status = 200
+      ctx.body = res.json(user)
+    }
+  }else {
+    ctx.body = res.fail(errLogin)
+  }
+
 })
 
 module.exports = router
