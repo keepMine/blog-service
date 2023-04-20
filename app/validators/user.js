@@ -67,8 +67,37 @@ class LoginValidator extends LinValidator {
     ]
   }
 }
+class PositiveIdParamsValidator extends LinValidator {
+  constructor() {
+    super()
+    this.id = [
+      new Rule('isInt', '用户ID需要正整数', { min: 1 })
+    ]
+    
+  }
+}
 
+class UpdateParamsValidator extends PositiveIdParamsValidator {
+  constructor() {
+    super()
+    this.email = [new Rule('isEmail', '电子邮箱不符合规范，请输入正确的邮箱')]
+  }
+  async validateEmail(vals) {
+    const email = vals.body.email
+    // 通过findOne方法查询数据
+    const user = await User.findOne({
+      where: {
+        email: email,
+      },
+    })
+    if (user) {
+      throw new Error('邮箱已被注册，请重新输入邮箱')
+    }
+  }
+}
 module.exports = {
   RegisterValidator,
-  LoginValidator
+  LoginValidator,
+  PositiveIdParamsValidator,
+  UpdateParamsValidator
 }
