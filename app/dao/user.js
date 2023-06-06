@@ -78,7 +78,8 @@ class UserDao {
     if(email) filter.email = email
     if(status || status == 0) filter.status = status
     if(username) filter.username = {
-      [Op.like]: `%${username}%`
+      [Op.like]: `%${username}%` // Op 是 Sequelize 提供的运算符常量对象，用于生成各种运算符，如 Op.like 表示生成 SQL 中的 LIKE 运算符。
+      // 表示模糊匹配的字符串模板，其中 % 表示匹配任意字符， 两个 % 之间的字符串是需要匹配的字符串的一部分。
     }
     try {
       //TODO: 查询这段代码缘由
@@ -87,7 +88,7 @@ class UserDao {
         limit: 10,
         offset: (page-1) * pageSize,
         order: [
-          ['created_at', 'DESC']
+          ['created_at', 'DESC'] // 该属性用于指定查询结果集的排序规则，按 created_at 字段降序排列。
         ]
       })
       const data = {
