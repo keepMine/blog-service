@@ -114,7 +114,6 @@ class LinValidator {
       const param = this._findParam(key)
       // 为该值执行RuleField类上的 validate方法返回值为 RuleFieldResult类的实例 包含了 {pass, msg, value}
       result = ruleField.validate(param.value)
-      console.log('result', result)
       if (result.pass) {
         // 如果参数路径不存在，往往是因为用户传了空值，而又设置了默认值 默认值由 _hasDefault 方法拿到  前提为 _allowEmpty 为 true
         if (param.path.length == 0) {

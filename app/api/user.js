@@ -96,9 +96,9 @@ router.post('/list', new Auth().verifyToken, async (ctx) => {
 })
 
 // 获取用户详情
-router.get('/detail', new Auth().verifyToken, async (ctx) => {
+router.get('/detail/:id', new Auth().verifyToken, async (ctx) => {
   const v = await new PositiveIdParamsValidator().validate(ctx)
-  const {id} = ctx.query
+  const {id} = ctx.params
   // const id = v.get('path.id')
   const [err, user] = await UserDao.detail(id)
   if(!err) {
@@ -122,7 +122,7 @@ router.delete('/delete/:id', new Auth().verifyToken, async (ctx) => {
   }
 })
 // 更新用户
-router.put('/update', new Auth().verifyToken, async (ctx) => {
+router.put('/update/:id', new Auth().verifyToken, async (ctx) => {
   const v = await new UpdateParamsValidator().validate(ctx)
   const id = v.get('body.id')
   const [err, user] = await UserDao.update(id, v)

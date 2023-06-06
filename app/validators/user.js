@@ -83,14 +83,16 @@ class UpdateParamsValidator extends PositiveIdParamsValidator {
     this.email = [new Rule('isEmail', '电子邮箱不符合规范，请输入正确的邮箱')]
   }
   async validateEmail(vals) {
-    const email = vals.body.email
+    const {email, id} = vals.body
+   
     // 通过findOne方法查询数据
     const user = await User.findOne({
       where: {
         email: email,
       },
     })
-    if (user) {
+   
+    if (user && id !== user.id) {
       throw new Error('邮箱已被注册，请重新输入邮箱')
     }
   }
