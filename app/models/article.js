@@ -1,6 +1,6 @@
 const { sequelize } = require('@core/db')
 const { Model, DataTypes } = require('sequelize')
-
+const moment = require('moment')
 class Article extends Model {}
 
 Article.init({
@@ -22,7 +22,7 @@ Article.init({
   },
   image_url: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
     comment: '文章封面图'
   },
   content: {
@@ -68,6 +68,14 @@ Article.init({
     type: DataTypes.INTEGER(10).UNSIGNED,
     allowNull: false,
     comment: '关联分类ID'
+  },
+  created_time: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    comment: '发布时间',
+    get() {
+      return moment(this.getDataValue('created_at')).format('YYYY-MM-DD HH:mm:ss');
+    }
   },
   created_at: {
     type: DataTypes.DATE,
