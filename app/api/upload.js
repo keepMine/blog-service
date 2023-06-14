@@ -20,7 +20,7 @@ const router = new Router({
 router.post('/upload/token', new Auth(AUTH_ADMIN).verifyToken, async (ctx) => {
   const options = {
       scope: 'wlj-pic-v1',
-      expires: 7200
+      expires: 7200 
   };
   const putPolicy = new qiniu.rs.PutPolicy(options);
   ctx.response.status = 200;
