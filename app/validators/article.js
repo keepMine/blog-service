@@ -13,6 +13,27 @@ class CreateArticleValidator extends LinValidator {
     this.admin_id = [new Rule("isLength", "admin_id 不能为空", { min: 1 })];
     this.created_time = [new Rule("isLength", "文章创建时间 created_time 不能为空", { min: 1 })];
   }
+  async validateCategoryId(vals) {
+    const categoryId = vals.body.category_id;
+
+    const category = await Category.findOne({
+      where: {
+        id: categoryId
+      }
+    });
+
+    if (!category) {
+      throw new Error('暂无此分类ID')
+    }
+  }
+}
+class PositiveIdParamsValidator extends LinValidator {
+  constructor() {
+    super()
+    this.id = [
+      new Rule('isInt', '文章ID需要正整数', { min: 1 })
+    ]
+  }
 }
 
-module.exports = {CreateArticleValidator}
+module.exports = {CreateArticleValidator, PositiveIdParamsValidator}

@@ -74,7 +74,7 @@ Article.init({
     allowNull: false,
     comment: '发布时间',
     get() {
-      return moment(this.getDataValue('created_at')).format('YYYY-MM-DD HH:mm:ss');
+      return moment(this.getDataValue('created_time')).format('YYYY-MM-DD HH:mm:ss');
     }
   },
   created_at: {
