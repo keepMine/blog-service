@@ -73,11 +73,50 @@ class CategoryDao {
         where: filter
       })
       if (!category) {
-        throw new global.errs.AuthFailed('账号不存在或者被封禁')
+        throw new global.errs.AuthFailed('没有找到相关分类')
       }
       return [null, category]
     } catch (error) {
       return [error, null]
+    }
+  }
+  // 更新分类
+  static async update(id, v) {
+    const category = await Category.findByPk(id);
+    if (!category) {
+      throw new global.errs.NotFound('没有找到相关分类');
+    }
+    category.name = v.get('body.name');
+    category.status = v.get('body.status');
+    category.sort_order = v.get('body.sort_order');
+    category.parent_id = v.get('body.parent_id') || 0;
+
+    try {
+      const res = await category.save();
+      return [null, res]
+    } catch (err) {
+      return [err, null]
+    }
+  }
+   // 删除分类
+   static async destroy(id) {
+    // 查询分类
+    const category = await Category.findOne({
+      where: {
+        id,
+        deleted_at: null
+      }
+    });
+    if (!category) {
+      throw new global.errs.NotFound('没有找到相关分类');
+
+    }
+    try {
+      const res = await category.destroy()
+      return [null, res]
+
+    } catch (err) {
+      return [err, null]
     }
   }
 }
